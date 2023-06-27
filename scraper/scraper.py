@@ -1,5 +1,3 @@
-from typing import Optional
-
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -18,14 +16,14 @@ class Scraper:
             service=ChromeService(ChromeDriverManager().install()), options=self.options
         )
 
-    def get_static_page_content(self, url: str) -> str:
-        return requests.get(url).text
+    def get_static_page_content(self, url: str, timeout: int = 0) -> str:
+        return requests.get(url, timeout=timeout).text
 
-    def get_dynamic_page_content(self, url: str) -> str:
+    def get_dynamic_page_content(self, url: str, timeout: int = 10) -> str:
+        self.driver.implicitly_wait(timeout)
         self.driver.get(url)
         return self.driver.page_source
 
-    def searcher(self, page_content: Optional[str]) -> BeautifulSoup:
-        page_content = page_content or self.driver.page_source
+    def searcher(self, page_content: str) -> BeautifulSoup:
         soup = BeautifulSoup(page_content, "lxml")
         return soup
